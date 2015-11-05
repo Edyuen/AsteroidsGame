@@ -1,5 +1,10 @@
 int mapHeight = 600;
 int mapWidth = 600;
+boolean up = false;
+boolean left = false;
+boolean right = false;
+boolean down = false;
+boolean hyperspace = false;
 SpaceShip battleCruiser = new SpaceShip();
 
 public void setup() 
@@ -11,9 +16,25 @@ public void draw()
   background(0);
   battleCruiser.show();
   battleCruiser.move();
+  if(up == true)
+  {
+    battleCruiser.accelerate(0.1);
+  }
+  if(left == true)
+  {
+    battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()-5));
+  }
+  if(right == true)
+  {
+    battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()+5));
+  }
+  if(down == true)
+  {
+    battleCruiser.accelerate(-0.1);
+  }
 }
 class SpaceShip extends Floater  
-{   
+{   private double dRadians; 
   public SpaceShip()
   {
     corners = 4;
@@ -46,10 +67,17 @@ class SpaceShip extends Floater
     public double getDirectionY(){return myDirectionY;}   
     public void setPointDirection(int degrees) {myPointDirection = degrees;}   
     public double getPointDirection(){return myPointDirection;} 
-    
-
-
+       public void hyperspace()
+    {
+      setX((int)(Math.random()*width));
+      setY((int)(Math.random()*height));
+      setDirectionX(0);
+      setDirectionY(0);
+      setPointDirection((int)(Math.random()*360));
+      
+    }
 }
+    
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
   protected int corners;  //the number of corners, a triangular floater has 3   
@@ -141,19 +169,38 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   //myX = (int)(Math.random()*600);
   //myY = (int)(Math.random()*600);
 //}
-void keyPressed(){
-  
-    if (keyCode == 'W'){
-      battleCruiser.accelerate(1);
-    }
 
-    if (keyCode == 'S'){ battleCruiser.accelerate(-1);}
-
+void keyPressed()
+{
+  if(keyCode == 'W')
+  { 
+    up = true;
   }
+  else if(keyCode == 'A')
+  { 
+    left = true;
+  }
+  else if(keyCode == 'D')
+  { 
+    right = true;
+  }
+  else if(keyCode == 'S'){
+    down = true;
+  }
+}
 
-
-void KeyReleased(){
+void keyReleased(){
   if (keyCode == 'W'){
-    battleCruiser.accelerate(0);
+    up = false;
   }
+  else if (keyCode == 'A'){
+    left = false;
+  }
+  else if (keyCode == 'D'){
+    right = false;
+  }
+  else if (keyCode == 'S'){
+    down = false;
+  }
+
 }
