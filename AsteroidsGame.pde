@@ -1,24 +1,36 @@
+PImage cruiser;
 int mapHeight = 600;
 int mapWidth = 600;
+double gravity = 1.015;
 boolean up = false;
 boolean left = false;
 boolean right = false;
 boolean down = false;
 boolean hyperspace = false;
 SpaceShip battleCruiser = new SpaceShip();
+Star [] starfield;
 
 public void setup() 
 {
+  cruiser = loadImage("cruiser.png");
   size(mapHeight, mapWidth);
+  starfield = new Star[200];
+  for (int i = 0; i <starfield.length; i++){
+    starfield[i] = new Star();
+  }
 }
 public void draw() 
 {
-  background(0);
+  background(22,23,36);
+  for (int i = 0; i < starfield.length; i++){
+     starfield[i].show();
+  }
   battleCruiser.show();
   battleCruiser.move();
+
   if(up == true)
   {
-    battleCruiser.accelerate(0.1);
+    battleCruiser.accelerate(.2);
   }
   if(left == true)
   {
@@ -30,7 +42,7 @@ public void draw()
   }
   if(down == true)
   {
-    battleCruiser.accelerate(-0.1);
+    battleCruiser.accelerate(-0.15);
   }
 }
 class SpaceShip extends Floater  
@@ -67,15 +79,66 @@ class SpaceShip extends Floater
     public double getDirectionY(){return myDirectionY;}   
     public void setPointDirection(int degrees) {myPointDirection = degrees;}   
     public double getPointDirection(){return myPointDirection;} 
-       public void hyperspace()
-    {
-      setX((int)(Math.random()*width));
-      setY((int)(Math.random()*height));
-      setDirectionX(0);
-      setDirectionY(0);
-      setPointDirection((int)(Math.random()*360));
-      
-    }
+   
+
+
+    public void move ()   //move the floater in the current direction of travel
+  {      
+    int maxSpeed = 10;
+    //change the x and y coordinates by myDirectionX and myDirectionY       
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;     
+    if(myDirectionX > maxSpeed)
+    myDirectionX = maxSpeed;
+    if(myDirectionY > maxSpeed)
+    myDirectionY = maxSpeed;
+    if(myDirectionX < -1 * maxSpeed)
+    myDirectionX = -1 * maxSpeed;
+    if(myDirectionY < -1 * maxSpeed)
+    myDirectionY = -1 * maxSpeed;
+
+    myDirectionX = myDirectionX/gravity;
+    myDirectionY = myDirectionY/gravity;
+    //wrap around screen    
+    if(myCenterX >width)
+    {     
+      myCenterX = 0;    
+       starfield = new Star[200];
+          for (int y = 0; y <starfield.length; y++){
+            starfield[y] = new Star();
+}
+    }    
+    else if (myCenterX<0)
+    {     
+      myCenterX = width;   
+
+            starfield = new Star[200];
+          for (int y = 0; y <starfield.length; y++){
+            starfield[y] = new Star();
+}
+    }    
+    if(myCenterY >height)
+    {    
+      myCenterY = 0;   
+       starfield = new Star[200];
+          for (int y = 0; y <starfield.length; y++){
+            starfield[y] = new Star();
+} 
+
+    }   
+    else if (myCenterY < 0)
+    {     
+      myCenterY = height;   
+       starfield = new Star[200];
+          for (int y = 0; y <starfield.length; y++){
+            starfield[y] = new Star();
+} 
+    }   
+    
+
+  }   
+
+
 }
     
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
@@ -114,18 +177,9 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   }   
   public void move ()   //move the floater in the current direction of travel
   {      
-    int maxSpeed = 10;
     //change the x and y coordinates by myDirectionX and myDirectionY       
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;     
-    if(myDirectionX > maxSpeed)
-    myDirectionX = maxSpeed;
-    if(myDirectionY > maxSpeed)
-    myDirectionY = maxSpeed;
-    if(myDirectionX < -1 * maxSpeed)
-    myDirectionX = -1 * maxSpeed;
-    if(myDirectionY < -1 * maxSpeed)
-    myDirectionY = -1 * maxSpeed;
 
     //wrap around screen    
     if(myCenterX >width)
@@ -144,7 +198,7 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     {     
       myCenterY = height;    
     }   
-  }   
+  } 
   public void show ()  //Draws the floater at the current position  
   {             
     fill(myColor);   
@@ -164,11 +218,20 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
   }   
 } 
 
-//class Star
-//{
-  //myX = (int)(Math.random()*600);
-  //myY = (int)(Math.random()*600);
-//}
+class Star
+{
+  private int myX, myY;
+
+  public Star(){
+    myX = (int)(Math.random()*600);
+    myY = (int)(Math.random()*600);
+  }
+
+  public void show(){
+    fill(255, 255, 255);
+    ellipse(myX, myY, 2.5, 2.5);
+  }
+}
 
 void keyPressed()
 {
@@ -187,6 +250,16 @@ void keyPressed()
   else if(keyCode == 'S'){
     down = true;
   }
+  else if(keyCode == 'F'){
+    
+      battleCruiser.setX((int)(Math.random()*width));
+      battleCruiser.setY((int)(Math.random()*height));
+      battleCruiser.setDirectionX(0);
+      battleCruiser.setDirectionY(0);
+      battleCruiser.setPointDirection((int)(Math.random()*360));
+      
+    
+  }
 }
 
 void keyReleased(){
@@ -202,5 +275,11 @@ void keyReleased(){
   else if (keyCode == 'S'){
     down = false;
   }
+    else if(keyCode == 'F'){
+    
+  }
+}
 
+void keyTyped(){
+  
 }
