@@ -8,25 +8,44 @@ boolean right = false;
 boolean down = false;
 boolean hyperspace = false;
 SpaceShip battleCruiser = new SpaceShip();
+Asteroid asteroid1 = new Asteroid();
 Star [] starfield;
+Asteroid [] asteroidField;
+ArrayList <Asteroid> bitch;
 
 public void setup() 
 {
+   size(600, 600);
   cruiser = loadImage("cruiser.png");
-  size(mapHeight, mapWidth);
-  starfield = new Star[200];
+  starfield = new Star[250];
   for (int i = 0; i <starfield.length; i++){
     starfield[i] = new Star();
   }
+  //asteroidField = new Asteroid[30];
+  //for (int j = 0; j<asteroidField.length; j++){
+    //asteroidField[j] = new Asteroid();
+  //}
+  bitch = new ArrayList<Asteroid>();
+   for (int j = 0; j<30; j++){
+    bitch.add(new Asteroid());
+  }
 }
+
 public void draw() 
 {
   background(22,23,36);
   for (int i = 0; i < starfield.length; i++){
      starfield[i].show();
   }
+  for (int j = 0; j<bitch.size(); j++){
+    bitch.get(j).show();
+    bitch.get(j).move();
+  }
+  asteroid1.show();
+  asteroid1.move();
   battleCruiser.show();
   battleCruiser.move();
+
 
   if(up == true)
   {
@@ -46,7 +65,8 @@ public void draw()
   }
 }
 class SpaceShip extends Floater  
-{   private double dRadians; 
+{   
+  private double dRadians; 
   public SpaceShip()
   {
     corners = 4;
@@ -79,9 +99,7 @@ class SpaceShip extends Floater
     public double getDirectionY(){return myDirectionY;}   
     public void setPointDirection(int degrees) {myPointDirection = degrees;}   
     public double getPointDirection(){return myPointDirection;} 
-   
-
-
+  
     public void move ()   //move the floater in the current direction of travel
   {      
     int maxSpeed = 10;
@@ -134,12 +152,74 @@ class SpaceShip extends Floater
             starfield[y] = new Star();
 } 
     }   
-    
-
   }   
-
-
 }
+
+ class Asteroid extends Floater
+    {
+      private int rotateSpeed;
+      public Asteroid ()
+      {
+      myColor = color(44,142,222,130);
+      corners = 8;
+      xCorners = new int[corners];
+      yCorners = new int[corners];
+      xCorners[0] = 14;
+      yCorners[0] = 0;
+      xCorners[1] = 10;
+      yCorners[1] = 10;
+      xCorners[2] = 0;
+      yCorners[2] = 14;
+      xCorners[3] = -10;
+      yCorners[3] = 10;
+      xCorners[4] = -14;
+      yCorners[4] = 0;
+      xCorners[5] = -10;
+      yCorners[5] = -10;
+      xCorners[6] = 0;
+      yCorners[6] = -14;
+      xCorners[7] = 10;
+      yCorners[7] = -10;
+    setX((int)(Math.random()*600));
+    setY((int)(Math.random()*600));
+    setDirectionX((Math.random()*4-2));
+    setDirectionY((Math.random()*4-2));
+    setPointDirection(270);
+      rotateSpeed = (int)(Math.random()*10-5);
+      }
+    public void move(){
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;     
+    myPointDirection +=rotateSpeed;
+     if(myCenterX >width)
+    {     
+      myCenterX = 0;    
+    }    
+    else if (myCenterX<0)
+    {     
+      myCenterX = width;    
+    }    
+    if(myCenterY >height)
+    {    
+      myCenterY = 0;    
+    }   
+    else if (myCenterY < 0)
+    {     
+      myCenterY = height;    
+    }   
+    }
+    public void setX(int x){myCenterX = x;}  
+    public int getX(){return (int)(myCenterX);}   
+    public void setY(int y){myCenterY = y;}   
+    public int getY(){return (int)(myCenterY);}   
+    public void setDirectionX(double x) {myDirectionX = x;}   
+    public double getDirectionX(){return myDirectionX;}   
+    public void setDirectionY(double y) {myDirectionY = y;}   
+    public double getDirectionY(){return myDirectionY;}   
+    public void setPointDirection(int degrees) {myPointDirection = degrees;}   
+    public double getPointDirection(){return myPointDirection;} 
+
+    }
     
 abstract class Floater //Do NOT modify the Floater class! Make changes in the SpaceShip class 
 {   
@@ -229,7 +309,7 @@ class Star
 
   public void show(){
     fill(255, 255, 255);
-    ellipse(myX, myY, 2.5, 2.5);
+    ellipse(myX, myY, 2.2, 2.2);
   }
 }
 
