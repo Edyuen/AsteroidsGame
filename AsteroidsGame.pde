@@ -6,12 +6,13 @@ boolean up = false;
 boolean left = false;
 boolean right = false;
 boolean down = false;
+boolean shoot = false;
 boolean hyperspace = false;
 SpaceShip battleCruiser = new SpaceShip();
 Asteroid asteroid1 = new Asteroid();
 Star [] starfield;
-Asteroid [] asteroidField;
-ArrayList <Asteroid> bitch;
+ArrayList <Asteroid> asteroidList;
+ArrayList <Bullet> bulletList = new ArrayList <Bullet>();
 
 public void setup() 
 {
@@ -21,28 +22,41 @@ public void setup()
   for (int i = 0; i <starfield.length; i++){
     starfield[i] = new Star();
   }
-  //asteroidField = new Asteroid[30];
-  //for (int j = 0; j<asteroidField.length; j++){
-    //asteroidField[j] = new Asteroid();
-  //}
-  bitch = new ArrayList<Asteroid>();
-   for (int j = 0; j<30; j++){
-    bitch.add(new Asteroid());
+
+  asteroidList = new ArrayList<Asteroid>();
+   for (int j = 0; j<50; j++){
+    asteroidList.add(new Asteroid());
   }
+  System.out.println(asteroidList.size());
 }
 
 public void draw() 
 {
   background(22,23,36);
+ 
   for (int i = 0; i < starfield.length; i++){
      starfield[i].show();
   }
-  for (int j = 0; j<bitch.size(); j++){
-    bitch.get(j).show();
-    bitch.get(j).move();
+  for (int j = 0; j<asteroidList.size(); j++){
+    asteroidList.get(j).show();
+    asteroidList.get(j).move();
+     for (int q = 0; q < bulletList.size(); q++){
+      if (dist(asteroidList.get(j).getX(), asteroidList.get(j).getY(), bulletList.get(q).getX(), bulletList.get(q).getY()) < 20){
+        bulletList.remove(q);
+        asteroidList.remove(j);
+        asteroidList.add(new Asteroid());
+        break;
+
+
+      }
+    }
+    
   }
-  asteroid1.show();
-  asteroid1.move();
+  for (int h = 0; h < bulletList.size(); h++){
+    bulletList.get(h).show();
+    bulletList.get(h).move();
+  }
+
   battleCruiser.show();
   battleCruiser.move();
 
@@ -63,6 +77,29 @@ public void draw()
   {
     battleCruiser.accelerate(-0.15);
   }
+  if(shoot == true)
+  {
+    bulletList.add(new Bullet(battleCruiser));
+  }
+
+  for (int i = 0; i < bulletList.size(); i++) {
+    if (dist(bulletList.get(i).getX(),bulletList.get(i).getY(),width/2,500/2)>width/3*2) {
+      bulletList.remove(i);
+    }
+  }
+  noStroke();
+fill(112,122,132);
+rect(0, 500, 600, 100);
+stroke(0);
+rect(30, 510, 30,30);
+fill(0);
+textSize(32);
+text("f", 39, 538);
+textSize(20);
+text("Hyperspace", ,532);
+
+
+
 }
 class SpaceShip extends Floater  
 {   
@@ -83,7 +120,7 @@ class SpaceShip extends Floater
 
     myColor = color(255,255,255);
     setX((int)(mapWidth/2));
-    setY((int)(mapHeight/2));
+    setY((int)(500/2));
     setDirectionX(0);
     setDirectionY(0);
     setPointDirection(270);
@@ -102,7 +139,7 @@ class SpaceShip extends Floater
   
     public void move ()   //move the floater in the current direction of travel
   {      
-    int maxSpeed = 10;
+    int maxSpeed = 5;
     //change the x and y coordinates by myDirectionX and myDirectionY       
     myCenterX += myDirectionX;    
     myCenterY += myDirectionY;     
@@ -135,7 +172,7 @@ class SpaceShip extends Floater
             starfield[y] = new Star();
 }
     }    
-    if(myCenterY >height)
+    if(myCenterY >height-100)
     {    
       myCenterY = 0;   
        starfield = new Star[200];
@@ -146,7 +183,7 @@ class SpaceShip extends Floater
     }   
     else if (myCenterY < 0)
     {     
-      myCenterY = height;   
+      myCenterY = height-100;   
        starfield = new Star[200];
           for (int y = 0; y <starfield.length; y++){
             starfield[y] = new Star();
@@ -155,6 +192,40 @@ class SpaceShip extends Floater
   }   
 }
 
+ class Bullet extends Floater
+ {
+    public Bullet (SpaceShip batteCruiser)
+    {
+      double dRadians =battleCruiser.myPointDirection*(Math.PI/180);
+      setX((int)battleCruiser.myCenterX);
+      setY((int)battleCruiser.myCenterY);
+      //myPointDirection = battleCruiser.getPointDirection();
+      setDirectionX(8 * Math.cos(dRadians));
+      setDirectionY(8 * Math.sin(dRadians));    
+    }
+
+    public void show()
+    {
+      fill(255,255,255, 50);
+      ellipse((float)myCenterX, (float)myCenterY, 12, 12);
+    }
+public void move(){
+    myCenterX += myDirectionX;    
+    myCenterY += myDirectionY;     
+     }
+    public void setX(int x){myCenterX = x;}  
+    public int getX(){return (int)(myCenterX);}   
+    public void setY(int y){myCenterY = y;}   
+    public int getY(){return (int)(myCenterY);}   
+    public void setDirectionX(double x) {myDirectionX = x;}   
+    public double getDirectionX(){return myDirectionX;}   
+    public void setDirectionY(double y) {myDirectionY = y;}   
+    public double getDirectionY(){return myDirectionY;}   
+    public void setPointDirection(int degrees) {myPointDirection = degrees;}   
+    public double getPointDirection(){return myPointDirection;} 
+  } 
+
+    
  class Asteroid extends Floater
     {
       private int rotateSpeed;
@@ -180,8 +251,10 @@ class SpaceShip extends Floater
       yCorners[6] = -14;
       xCorners[7] = 10;
       yCorners[7] = -10;
-    setX((int)(Math.random()*600));
-    setY((int)(Math.random()*600));
+    //setX((int)(Math.random()*600));
+    setX(0);
+    setY((int)(Math.random()*500));
+
     setDirectionX((Math.random()*4-2));
     setDirectionY((Math.random()*4-2));
     setPointDirection(270);
@@ -199,14 +272,15 @@ class SpaceShip extends Floater
     {     
       myCenterX = width;    
     }    
-    if(myCenterY >height)
+    if(myCenterY >height-100)
     {    
       myCenterY = 0;    
     }   
     else if (myCenterY < 0)
     {     
-      myCenterY = height;    
+      myCenterY = height-100;    
     }   
+
     }
     public void setX(int x){myCenterX = x;}  
     public int getX(){return (int)(myCenterX);}   
@@ -270,13 +344,13 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     {     
       myCenterX = width;    
     }    
-    if(myCenterY >height)
+    if(myCenterY >height-100)
     {    
       myCenterY = 0;    
     }   
     else if (myCenterY < 0)
     {     
-      myCenterY = height;    
+      myCenterY = height-100;    
     }   
   } 
   public void show ()  //Draws the floater at the current position  
@@ -309,7 +383,7 @@ class Star
 
   public void show(){
     fill(255, 255, 255);
-    ellipse(myX, myY, 2.2, 2.2);
+    ellipse(myX, myY, 2.1, 2.1);
   }
 }
 
@@ -330,10 +404,13 @@ void keyPressed()
   else if(keyCode == 'S'){
     down = true;
   }
+  else if(keyCode == ' '){
+    shoot=true;
+  }
   else if(keyCode == 'F'){
     
       battleCruiser.setX((int)(Math.random()*width));
-      battleCruiser.setY((int)(Math.random()*height));
+      battleCruiser.setY((int)(Math.random()*500));
       battleCruiser.setDirectionX(0);
       battleCruiser.setDirectionY(0);
       battleCruiser.setPointDirection((int)(Math.random()*360));
@@ -354,6 +431,9 @@ void keyReleased(){
   }
   else if (keyCode == 'S'){
     down = false;
+  }
+  else if(keyCode == ' '){
+    shoot = false;
   }
     else if(keyCode == 'F'){
     
