@@ -7,24 +7,29 @@ boolean left = false;
 boolean right = false;
 boolean down = false;
 boolean shoot = false;
+boolean shapeChange = false;
 boolean hyperspace = false;
 SpaceShip battleCruiser = new SpaceShip();
 Asteroid asteroid1 = new Asteroid();
 Star [] starfield;
+boolean circle = false;
+boolean triangle = false;
+boolean square = false;
 ArrayList <Asteroid> asteroidList;
 ArrayList <Bullet> bulletList = new ArrayList <Bullet>();
+int bulletShape = 1;
 
 public void setup() 
 {
    size(600, 600);
   cruiser = loadImage("cruiser.png");
-  starfield = new Star[250];
+  starfield = new Star[350];
   for (int i = 0; i <starfield.length; i++){
     starfield[i] = new Star();
   }
 
   asteroidList = new ArrayList<Asteroid>();
-   for (int j = 0; j<50; j++){
+   for (int j = 0; j<150; j++){
     asteroidList.add(new Asteroid());
   }
   System.out.println(asteroidList.size());
@@ -33,7 +38,23 @@ public void setup()
 public void draw() 
 {
   background(22,23,36);
- 
+  if (bulletShape == 1){
+   circle = true;
+   triangle = false;
+   square = false;
+  }
+   if (bulletShape == 2){
+   circle = false;
+   triangle = true;
+   square = false;
+  }
+   if (bulletShape == 3){
+   circle = false;
+   triangle = false;
+   square = true;
+  }
+
+  
   for (int i = 0; i < starfield.length; i++){
      starfield[i].show();
   }
@@ -61,17 +82,27 @@ public void draw()
   battleCruiser.move();
 
 
+  if (shapeChange == true){
+    bulletShape = bulletShape + 1;
+    if (bulletShape > 3){
+      bulletShape = 1;
+    }
+  }
+
   if(up == true)
   {
     battleCruiser.accelerate(.2);
   }
   if(left == true)
   {
-    battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()-5));
+    battleCruiser.setDirectionX(-7);
+    //battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()-5));
   }
   if(right == true)
   {
-    battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()+5));
+    
+    battleCruiser.setDirectionX(7);
+    //battleCruiser.setPointDirection((int)(battleCruiser.getPointDirection()+5));
   }
   if(down == true)
   {
@@ -80,6 +111,9 @@ public void draw()
   if(shoot == true)
   {
     bulletList.add(new Bullet(battleCruiser));
+   // bulletList.add(new Bullet(battleCruiser));
+   
+
   }
 
   for (int i = 0; i < bulletList.size(); i++) {
@@ -91,14 +125,32 @@ public void draw()
 fill(112,122,132);
 rect(0, 500, 600, 100);
 stroke(0);
-rect(30, 510, 30,30);
+//F Key and Hyperspace
+rect(130, 510, 30,30);
 fill(0);
-textSize(32);
-text("f", 39, 538);
+textSize(25);
+text("F", 139, 535);
 textSize(20);
-text("Hyperspace", ,532);
+text("Hyperspace", 165,532);
 
-
+//W A S D Keys
+textSize(25);
+noFill();
+rect(50, 510+10, 30,30);
+fill(0);
+text("W", 55, 533+10);
+noFill();
+rect(50, 540+10, 30,30);
+fill(0);
+text("S", 59, 564+10);
+noFill();
+rect(80, 540+10, 30,30);
+fill(0);
+text("D", 86, 564+10);
+noFill();
+rect(20, 540+10, 30,30);
+fill(0);
+text("A", 27, 564+10);
 
 }
 class SpaceShip extends Floater  
@@ -158,10 +210,13 @@ class SpaceShip extends Floater
     if(myCenterX >width)
     {     
       myCenterX = 0;    
+
        starfield = new Star[200];
           for (int y = 0; y <starfield.length; y++){
             starfield[y] = new Star();
+            
 }
+
     }    
     else if (myCenterX<0)
     {     
@@ -172,13 +227,9 @@ class SpaceShip extends Floater
             starfield[y] = new Star();
 }
     }    
-    if(myCenterY >height-100)
+    if(myCenterY >height-120)
     {    
-      myCenterY = 0;   
-       starfield = new Star[200];
-          for (int y = 0; y <starfield.length; y++){
-            starfield[y] = new Star();
-} 
+      myDirectionY = -.5; 
 
     }   
     else if (myCenterY < 0)
@@ -196,18 +247,35 @@ class SpaceShip extends Floater
  {
     public Bullet (SpaceShip batteCruiser)
     {
+     
       double dRadians =battleCruiser.myPointDirection*(Math.PI/180);
+      myPointDirection = battleCruiser.getPointDirection() + Math.random()*4-2;
       setX((int)battleCruiser.myCenterX);
       setY((int)battleCruiser.myCenterY);
-      //myPointDirection = battleCruiser.getPointDirection();
-      setDirectionX(8 * Math.cos(dRadians));
-      setDirectionY(8 * Math.sin(dRadians));    
+      setDirectionX(5 * Math.cos(dRadians) + Math.random()*10-5);
+      setDirectionY(5 * Math.sin(dRadians));    
     }
 
     public void show()
     {
-      fill(255,255,255, 50);
-      ellipse((float)myCenterX, (float)myCenterY, 12, 12);
+      noStroke();
+      fill(0,255,255,90);
+
+      if (circle == true){
+      ellipse((float)myCenterX, (float)myCenterY, 12, 18);
+      fill(255,255,255,140);
+      ellipse((float)myCenterX, (float)myCenterY, 4, 6);
+      square = false;
+      triangle = false;
+      }
+
+      else if (triangle = true) {
+        triangle((float)myCenterX+8, (float)myCenterY+8, (float)myCenterX-8, (float)myCenterY+8, (float)myCenterX, (float)myCenterY-8);
+              fill(255,255,255,140);
+        triangle((float)myCenterX+3, (float)myCenterY+3, (float)myCenterX-3, (float)myCenterY+3, (float)myCenterX, (float)myCenterY-3);
+      }
+      
+
     }
 public void move(){
     myCenterX += myDirectionX;    
@@ -231,7 +299,7 @@ public void move(){
       private int rotateSpeed;
       public Asteroid ()
       {
-      myColor = color(44,142,222,130);
+      myColor = color(0,191,255, 130);
       corners = 8;
       xCorners = new int[corners];
       yCorners = new int[corners];
@@ -252,13 +320,13 @@ public void move(){
       xCorners[7] = 10;
       yCorners[7] = -10;
     //setX((int)(Math.random()*600));
-    setX(0);
-    setY((int)(Math.random()*500));
+    setX((int)(Math.random()*500));
+    setY(-200);
 
-    setDirectionX((Math.random()*4-2));
-    setDirectionY((Math.random()*4-2));
+    setDirectionX((Math.random()*2-1));
+    setDirectionY((Math.random()*4+2));
     setPointDirection(270);
-      rotateSpeed = (int)(Math.random()*10-5);
+      rotateSpeed = (int)(Math.random()*14-7);
       }
     public void move(){
     myCenterX += myDirectionX;    
@@ -272,14 +340,15 @@ public void move(){
     {     
       myCenterX = width;    
     }    
-    if(myCenterY >height-100)
+    if(myCenterY > height-100)
     {    
-      myCenterY = 0;    
+      myCenterY = -200;    
+      myCenterX = Math.random()*500;
     }   
-    else if (myCenterY < 0)
-    {     
-      myCenterY = height-100;    
-    }   
+    // else if (myCenterY < 0)
+    // {     
+    //   myCenterY = height-100;    
+    // }   
 
     }
     public void setX(int x){myCenterX = x;}  
@@ -378,12 +447,17 @@ class Star
 
   public Star(){
     myX = (int)(Math.random()*600);
-    myY = (int)(Math.random()*600);
+    myY = (int)(Math.random()*500);
   }
 
   public void show(){
     fill(255, 255, 255);
-    ellipse(myX, myY, 2.1, 2.1);
+    ellipse(myX, myY, 2.5, 2.5);
+        myY=myY+3;
+    if (myY>=500){
+      myY = 0;
+    }
+   
   }
 }
 
@@ -410,12 +484,13 @@ void keyPressed()
   else if(keyCode == 'F'){
     
       battleCruiser.setX((int)(Math.random()*width));
-      battleCruiser.setY((int)(Math.random()*500));
-      battleCruiser.setDirectionX(0);
-      battleCruiser.setDirectionY(0);
-      battleCruiser.setPointDirection((int)(Math.random()*360));
-      
-    
+      //battleCruiser.setY((int)(Math.random()*500));
+      //battleCruiser.setDirectionX(0);
+      //battleCruiser.setDirectionY(0);
+      //battleCruiser.setPointDirection((int)(Math.random()*360));
+  }
+  else if (keyCode == 'G'){
+    shapeChange = true;
   }
 }
 
